@@ -1,0 +1,133 @@
+package baidu.ucp.proto;
+
+
+message StatusCode {
+    optional int32 code = 1;
+    optional string reason = 2;
+}
+
+message User {
+    optional string name = 1;
+    optional string token = 2;
+}
+
+enum JobType {
+    kJobTypeBatch = 1;
+    kJobTypeStreaming = 2;
+}
+
+message JobDescription {
+    optional string job_name = 1;
+    optional JobType job_type = 2;
+    optional string input = 3;    // [talbe_name], tera only
+    optional bytes start_key = 4;
+    optional bytes end_key = 5;
+    repeated bytes fileds = 6;    // "c.q1,c.q2"
+    optional string files = 7;    // "ftp://"
+    optional string routine = 8;  // "sh cmd.sh"
+    optional string output = 9;   // "mq://"
+    optional int32 replica = 10;
+}
+
+message SubmitJobRequest {
+   optional User user = 1;   // donot realize
+   optional JobDescription job_description = 2;
+}
+
+message SubmitJobResponse {
+    optional StatusCode sc = 1;
+    optional string job_id = 2;
+}
+
+message RemoveJobRequest {
+    optional User user = 1;
+    optional string job_id = 3;
+}
+
+message RemoveJobResponse {
+    optional StatusCode sc = 1;
+}
+
+message ListJobsRequest {
+    optional User user = 1;
+}
+
+message JobCounter {
+    optional int64 total_tasks = 1;
+    optional int64 finished_tasks = 2;
+    optional int64 running_tasks = 3;
+    optional int64 pending_tasks = 4;
+    optional int64 input_records = 5;
+    optional int64 output_records = 6;
+}
+
+message ListJobsResponse {
+    optional StatusCode sc = 1;
+    repeated JobCounter job_counter = 2;
+}
+
+message TaskCounter {
+    optional int64 input_records = 1;
+    optional int64 output_records = 2;
+}
+
+enum TaskStatus {
+    kError = 1;   //ignore
+    kPending = 2;
+    kRunning = 3;
+    kFinished = 4;
+}
+
+message TaskInfo {
+    optional TaskStatus status = 1;
+    optional TaskCounter task_counter = 2;
+    optional int64 start_time = 3;  // micro secons since epoch
+    optional int64 finish_time = 4; //
+    optional string hostname = 5;
+}
+
+message ShowJobRequest {
+    optional User user = 1;
+    optional string job_id = 2;
+}
+
+message ShowJobResponse {
+    optional StatusCode sc = 1;
+    optional JobCounter job_counter = 2;
+    repeated TaskInfo task_info = 3;
+}
+
+
+message FetchTaskRequest {
+    optional string job_id = 2;
+    optional string task_id = 3;
+    optional TaskStatus status = 4;
+    optional bytes current_record = 5;
+    optional TaskCounter task_counter = 6;
+}
+
+enum TaskAction {
+    kQuit = 1;
+}
+
+message FetchTaskResponse {
+    optional StatusCode sc = 1;
+    optional JobDescription job_description = 2;
+    optional string task_id = 3;
+    optional bytes start_key = 4;
+    optional bytes end_key = 5;
+    optional TaskAction action = 6;
+}
+
+service UcpMaster {
+    // client
+    rpc SubmitJob(SubmitJobRequest) returns (SubmitJobResponse);
+    rpc RemoveJob(RemoveJobRequest) returns (RemoveJobResponse);
+    rpc ListJobs(ListJobsRequest) returns (ListJobsResponse);
+    rpc ShowJob(ShowJobRequest) returns (ShowJobResponse);
+
+    // worker
+    rpc FetchTask(FetchTaskRequest) returns (FetchTaskResponse);
+}
+
+
