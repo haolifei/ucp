@@ -1,5 +1,5 @@
 package baidu.ucp.proto;
-
+option cc_generic_services = true;
 
 message StatusCode {
     optional int32 code = 1;

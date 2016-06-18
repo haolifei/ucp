@@ -1,0 +1,9 @@
+*.o
+*.swp
+*~
+*.pb.cc
+*.pb.h
+*.exe
+thirdparty
+thirdsrc
+
