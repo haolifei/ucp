@@ -228,6 +228,16 @@ else
     touch "${FLAG_DIR}/leveldb"
 fi
 
+#if [[ -f "${FLAG_DIR}/tera" ]] && [[ -f "${DEPS_PREFIX}/lib/libtera.a" ]]
+#then
+#    echo "tera exists"
+#else
+#    rm tera -rf
+#    git clone https://github.com/baidu/tera.git
+#    cd tera && make libtera.a -j4
+#fi
+
+
 cd ${WORK_DIR}
 echo "build deps done!"
 
