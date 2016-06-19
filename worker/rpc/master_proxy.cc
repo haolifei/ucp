@@ -10,7 +10,9 @@ namespace baidu {
         namespace rpc {
 
             MasterProxy::MasterProxy(const std::string& nexus) :
-                nexus_(nexus) {
+                nexus_(nexus),
+                rpc_client_(new baidu::util::RpcClient),
+                master_watcher_(new baidu::ucp::Watcher){
                 }
 
             MasterProxy::~MasterProxy() {
@@ -19,15 +21,20 @@ namespace baidu {
             baidu::ucp::system::ErrorCode MasterProxy::Setup() {
                 //if (!master_watcher_->Init(boost::bind(&MasterProxy::HandleMasterChange, this, _1))) {
                 //    VLOG(10) << "init master watch failed";
-                //    return ERRORCODE_OK(-1, "init master watch failed");
-                //}
+                //    return ERRORCODE(-1, "init master watch failed");
+                // }
                 return ERRORCODE_OK;
+
             }
 
             baidu::ucp::system::ErrorCode MasterProxy::FetchTask(const baidu::ucp::proto::FetchTaskRequest& request,
                         baidu::ucp::proto::FetchTaskResponse& response
                         ) {
                 boost::mutex::scoped_lock lock(rpc_mutex_);
+                if (!rpc_client_->GetStub(master_endpoint_, &master_stub_)) {
+                    return ERRORCODE(-1, "get mast stub failed");
+                }
+
                 if (!rpc_client_->SendRequest(master_stub_,
                                 &baidu::ucp::proto::UcpMaster_Stub::FetchTask,
                                 &request,

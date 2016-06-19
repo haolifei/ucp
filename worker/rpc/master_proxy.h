@@ -27,11 +27,11 @@ namespace baidu {
             private:
                 void HandleMasterChange(const std::string& new_master_endpoint);
                 
+                const std::string nexus_;
                 boost::scoped_ptr<baidu::util::RpcClient> rpc_client_;
                 baidu::ucp::proto::UcpMaster_Stub* master_stub_;
                 boost::scoped_ptr<baidu::ucp::Watcher> master_watcher_;
                 boost::mutex rpc_mutex_;
-                const std::string nexus_;
                 std::string master_endpoint_;
             };
         }

@@ -15,9 +15,13 @@
  **/
 
 #include <iostream>
-
+#include "task/task_fetcher.h"
+#include "boost/scoped_ptr.hpp"
 int main(int argc, char** argv) {
-    std::cerr << "hello worker" << std::endl;
+
+    boost::scoped_ptr<baidu::ucp::task::TaskFetcher> fetcher(new baidu::ucp::task::TaskFetcher(""));
+    fetcher->Setup();
+    fetcher->Run();
     return 0;
 }
 

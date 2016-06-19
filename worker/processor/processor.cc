@@ -10,7 +10,11 @@ namespace baidu {
     namespace ucp {
         namespace processor {
 
-            Processor::Processor() : pid_(-1) {
+            Processor::Processor(boost::shared_ptr<baidu::ucp::task::Task> task) : 
+                task_(task),
+                pid_(-1),
+                input_record_(0L),
+                output_record_(0L) {
                 fd_[0] = -1;
                 fd_[1] = -1;
             }
@@ -18,8 +22,15 @@ namespace baidu {
             Processor::~Processor() {
 
             }
+            
+            const std::string Processor::CurrentRecord() {
+                return record_;
+            }
 
-            baidu::ucp::system::ErrorCode Processor::Setup(const std::string& cmd) {
+
+            baidu::ucp::system::ErrorCode Processor::Setup() {
+                std::string cmd = task_->job.routine();
+                
                 if ((pid_ = fork()) == 0) {
                     close(fd_[0]);
                     dup2(fd_[1], STDOUT_FILENO);
@@ -60,6 +71,7 @@ namespace baidu {
                 if (-1 == ret) {
                     return PERRORCODE(-1, errno, "write ln failed");
                 }
+                record_ = key;
                 return ERRORCODE_OK;
             }
 
@@ -78,6 +90,16 @@ namespace baidu {
                 }
                 ::waitpid(pid_, NULL, 0);
             }
+
+            int64_t Processor::InputRecord() {
+                return input_record_;
+            }
+
+            int64_t Processor::OutputRecord() {
+                return output_record_;
+            }
+
+
         }
     }
 }

@@ -9,10 +9,14 @@
 #pragma once
 #include "rpc/master_proxy.h"
 #include "util/error_code.h"
+#include "task/task_runner.h"
+#include "task_runner.h"
+#include "thread_pool.h"
 
 namespace baidu {
     namespace ucp {
-        namespace agent {
+        namespace task {
+            
             class TaskFetcher {
             public:
                 TaskFetcher(const std::string& nexus);
@@ -22,10 +26,11 @@ namespace baidu {
                 void Run();
                 
             private:
+                void ExecuteTaskRutine(boost::shared_ptr<baidu::ucp::task::TaskRunner> runner);
                 bool running_;
                 boost::scoped_ptr<baidu::ucp::rpc::MasterProxy> master_proxy_;
-                
-                
+                boost::shared_ptr<baidu::ucp::task::TaskRunner> task_runner_;
+                baidu::common::ThreadPool task_exe_pool_;
             };
         }
     }

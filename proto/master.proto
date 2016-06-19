@@ -22,7 +22,7 @@ message JobDescription {
     optional string input = 3;    // [talbe_name], tera only
     optional bytes start_key = 4;
     optional bytes end_key = 5;
-    repeated bytes fileds = 6;    // "c.q1,c.q2"
+    repeated bytes fields = 6;    // "c.q1:int,c.q2:double"
     optional string files = 7;    // "ftp://"
     optional string routine = 8;  // "sh cmd.sh"
     optional string output = 9;   // "mq://"
@@ -59,6 +59,7 @@ message JobCounter {
     optional int64 pending_tasks = 4;
     optional int64 input_records = 5;
     optional int64 output_records = 6;
+    optional string job_id = 7;
 }
 
 message ListJobsResponse {
@@ -72,10 +73,10 @@ message TaskCounter {
 }
 
 enum TaskStatus {
-    kError = 1;   //ignore
-    kPending = 2;
-    kRunning = 3;
-    kFinished = 4;
+    kTaskError = 1;   //ignore
+    kTaskPending = 2;
+    kTaskRunning = 3;
+    kTaskFinished = 4;
 }
 
 message TaskInfo {
