@@ -30,8 +30,8 @@ message JobDescription {
 }
 
 message SubmitJobRequest {
-   optional User user = 1;   // donot realize
-   optional JobDescription job_description = 2;
+    optional User user = 1;   // donot realize
+    optional JobDescription job_description = 2;
 }
 
 message SubmitJobResponse {
@@ -85,6 +85,10 @@ message TaskInfo {
     optional int64 start_time = 3;  // micro secons since epoch
     optional int64 finish_time = 4; //
     optional string hostname = 5;
+    optional string task_id = 6;
+    optional bytes start_key = 7;
+    optional bytes end_key = 8;
+    optional string job_id = 9;
 }
 
 message ShowJobRequest {
@@ -97,7 +101,6 @@ message ShowJobResponse {
     optional JobCounter job_counter = 2;
     repeated TaskInfo task_info = 3;
 }
-
 
 message FetchTaskRequest {
     optional string job_id = 2;
@@ -130,5 +133,3 @@ service UcpMaster {
     // worker
     rpc FetchTask(FetchTaskRequest) returns (FetchTaskResponse);
 }
-
-
